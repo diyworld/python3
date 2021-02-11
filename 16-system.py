@@ -1,5 +1,6 @@
 
 """
+os.system(cmd) 执行系统命令
 os.access(path, mode) 检验权限模式
 os.chdir(path) 改变当前工作目录
 os.chflags(path, flags) 设置路径的标记为数字标记。

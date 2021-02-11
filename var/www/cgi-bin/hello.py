@@ -3,7 +3,7 @@
 C:\ccx\workplace\python3\var\www>python -m http.server --cgi 808
 """
 
-"""
+
 # 一个简单的html
 print ("Content-type:text/html")
 print ()                             # 空行，告诉服务器结束头部
@@ -29,3 +29,4 @@ print ("<ul>")
 for key in os.environ.keys():
     print ("<li><span style='color:green'>%30s </span> : %s </li>" % (key,os.environ[key]))
 print ("</ul>")
+"""

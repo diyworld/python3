@@ -13,6 +13,8 @@ if not site_url:
     site_url = "http://localhost:8081/cgi-bin/hello_get.py"
 
 htmldata = """
+Content-type:text/html
+
 <html>
 <head>
 <!--注释掉charset, 否则浏览器显示中文会乱码-->
@@ -30,8 +32,11 @@ htmldata = """
 </html>
 """ % (site_name, site_url)
 
-print ("Content-type:text/html") #这两行必须放置外面输出, 不能在html_response里面输出
-print ()
 print(htmldata)
-
-
+"""
+# 写入到html文件
+htmlfile = "D:\\workplace\\python3\\var\\www\html\\hello_get_s1.html"
+file = open(htmlfile, 'w')
+file.write(htmldata)
+file.close()
+"""
