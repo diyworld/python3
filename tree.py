@@ -53,6 +53,11 @@ addnode(testlist, tnodeA, -1)
 addnode(testlist, tnodeB, 0)
 addnode(testlist, tnodeC, 0)
 addnode(testlist, tnodeD, 0)
+
+addnode(testlist, tnodeE, 1)
+addnode(testlist, tnodeF, 4)
+addnode(testlist, tnodeG, 4)
+print(testlist)
 travtree(testlist, 0)
 print()
 
