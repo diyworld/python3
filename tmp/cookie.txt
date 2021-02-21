@@ -1,0 +1,4 @@
+#LWP-Cookies-2.0
+Set-Cookie3: BAIDUID="52619D23FDF0DD556DE885255FBAC1CD:FG=1"; path="/"; domain=".baidu.com"; path_spec; domain_dot; expires="2022-02-21 02:59:16Z"; version=0
+Set-Cookie3: bid=p2vmwl5ZLUk; path="/"; domain=".douban.com"; path_spec; domain_dot; expires="2022-02-21 01:35:48Z"; version=0
+Set-Cookie3: BDSVRTM=1; path="/"; domain="www.baidu.com"; path_spec; discard; version=0

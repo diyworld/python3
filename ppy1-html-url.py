@@ -1,5 +1,5 @@
 '''
-抓取指定域名的html数据，保存到文件，提取出里面所有的url
+    利用正则表达式，抓取指定域名的html数据，保存到文件，提取出里面所有的url
 '''
 import urllib.request
 import os
