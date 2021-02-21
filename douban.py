@@ -24,7 +24,7 @@ url = "https://accounts.douban.com/j/mobile/login/basic"  #登入链接
 forms = {'name': '15060121576', 'password': '12345678'}           #http表单数据
 postdata = urllib.parse.urlencode(forms).encode()                 #编码http表单数据
 headers = {                                                       #http头
-        "Accept": "text/html",
+        "Accept": "text/html,application/xml",
         "Accept-Encoding": "gzip",
         "Accept-Language": "zh-CN,zh;q=0.9",
         "Connection": "keep-alive",
@@ -46,7 +46,8 @@ try:
         print("url:", response.url)
         print("code:", response.code)
         print("msg:", response.msg)
-        print("Encoding:", response.info().get('Content-Encoding'))
+        print("Content-Encoding:", response.info().get('Content-Encoding'))
+        print("Content-Type:", response.info().get('Content-Type'))
         print(f"Response data: {len(responsedata)} bytes, type is {type(responsedata)}")
 
     # 解压数据，只支持gzip
