@@ -1,0 +1,46 @@
+<http的请求头部>
+GET / HTTP/1.1          请求方法 + URL + 协议版本
+Host: www.baidu.com     主机域名
+Connection: keep-alive  持久连接
+Pragma: no-cache        缓存控制，不缓存，同 Cache-Control: no-cache（仅应用于http1.1）
+Cache-Control: no-cache 缓存控制，不缓存，同 Pragma: no-cache（应用于http1.0）
+Upgrade-Insecure-Requests: 1  向服务器发送一个客户端对HTTPS加密和认证响应良好，并且可以成功处理的信号，可以请求所属网站所有的HTTPS资源；服务器收到请求后会返回 “Content-Security-Policy: upgrade-insecure-requests” 头，告诉浏览器，可以把所属本站的所有 http 连接升级为 https 连接
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36      用户代理，一般固定为 Mozilla/x.0 + 系统版本 + xxx
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9      本地可接收处理的文本类型
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+sec-ch-ua: "Chromium";v="88", "Google Chrome";v="88", ";Not A Brand";v="99"
+sec-ch-ua-mobile: ?0
+Referrer Policy: strict-origin-when-cross-origin      指明当前流量的来源参考页面，可以知道访客是怎么来到当前页面的
+Accept-Encoding: gzip, deflate, br     本地可接收处理的压缩格式
+Accept-Language: zh-CN,zh;q=0.9        本地可接收处理的编码格式
+Cookie: PSTM=1612489539; BAIDUID=AB08360CBC00512BC19D7AA6113CBA8A:FG=1; BIDUPSID=38178EB313155B39BAC052113E387151; __yjs_duid=1_6f7b01ab3cceb8a8e1ecfc0fe83341121612489745772; BDSFRCVID_BFESS=AG-OJeC62CVeGtReXQSArU5wYfr7GGRTH6aoMmL9J_A9u1-2WQAbEG0PSf8g0KubhaS4ogKK3mOTH4-F_2uxOjjg8UtVJeC6EG0Ptf8g0f5; H_BDCLCKID_SF_BFESS=tbCfVItaJKI3jtbRqRbW5bLVhpb3-C62aJ3WslbvWJ5TMCo65fjVhbK8WbLtLJjPJ6vkBt-5LbR_ShPC-tn2Q5FAX46jQMR9LHO-0IL53l02VKn9e-t2ynLVhfnfy-RMW20eWl7mWI-VsxA45J7cM4IseboJLfT-0bc4KKJxbnLWeIJIjjCKj5obDN8tJ6n3bC3-VIP8Kb7VbpjjqfnkbfJBD4bpKxbJLDTvbxOp-fKhfUTIK6JnQpD7yajK2MrLBn5ZMhDXbCDVhx3hLt5pQT8r0UDOK5OibCr33x82ab3vOIOzXpO1jKuzBN5thURB2DkO-4bCWJ5TMl5jDh3Mb6ksDMDtqtJHKbDtoCLbJMK; BD_HOME=1; H_PS_PSSID=; BD_UPN=12314353; BAIDUID_BFESS=AB08360CBC00512BC19D7AA6113CBA8A:FG=1; BDRCVFR[Ke8kQFs3CYT]=OjjlczwSj8nXy4Grjf8mvqV; BDRCVFR[Y1-7gJ950Fn]=mk3SLVN4HKm; BA_HECTOR=05ak250h212100806k1g2u2hu0r           Cookie内容，python代码可直接交给urllib库处理
+
+xxx      如果是其他方法如post，这里应是http的实体数据部分
+
+
+
+<http响应>
+HTTP/1.1 200 OK              协议版本 + 响应码 + 原因短语
+Bdpagetype: 1
+Bdqid: 0x898294260000a5c4
+Cache-Control: private       缓存控制响应，取值有private、no-cache、max-age、must- revalidate等，默认为private
+Connection: keep-alive       连接方式：持久连接
+Content-Encoding: gzip       压缩格式：gzip
+Content-Type: text/html;charset=utf-8     实体数据的类型
+Date: Fri, 19 Feb 2021 00:46:40 GMT       消息产生时间
+Expires: Fri, 19 Feb 2021 00:46:13 GMT    资源过期日期，与Cache-Control协同一起使用
+Server: BWS/1.1              服务器程序名称和版本
+Set-Cookie: BDSVRTM=0; path=/             设置Cookie
+Set-Cookie: BD_HOME=1; path=/             设置Cookie
+Set-Cookie: H_PS_PSSID=33423_33517_33241_33344_33601_33585_26350; path=/; domain=.baidu.com
+Strict-Transport-Security: max-age=172800 设置Cookie
+Traceid: 161369560002219996269908645021098223044
+X-Ua-Compatible: IE=Edge,chrome=1
+Transfer-Encoding: chunked
+
+xxx      如果还有数据，这里应是http的实体数据部分
+
+
