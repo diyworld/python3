@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  var _REDIR = 'None';
+  var _TMPL_ACCOUNT = document.getElementById('tmpl_account').innerHTML;
+  var _TMPL_PHONE = document.getElementById('tmpl_phone').innerHTML;
+  var _TMPL_ABROAD = document.getElementById('tmpl_abroad').innerHTML;
+  var _TMPL_AGREEMENT = document.getElementById('tmpl_agreement').innerHTML;
+  var isAnony = true;
+  ;(function(){
+    Do.add('dialog',{path: 'https://img3.doubanio.com/f/accounts/0d89968f657dd00590944957e19a943e13ecb266/js/ui/dialog.js',type:'js',requires:['dialog-css']});
+    Do('dialog', function(){
+      "use strict";function completePhone(e,o){e||(e=$(".js-choose-district").text()),o||(o=$.trim(verifyPhoneNum.val())),verifyPhone.val(e+o)}var phoneDialog=dui.Dialog({title:"选择国际区号",cls:"GlobalPhoneDialog",modal:!0,width:340,cache:!0,content:$("#template-global-phone").html()},!0);$(document).on("click",".js-choose-district",function(){phoneDialog.open().update()});var verifyPhone=$("#verify_phone"),verifyPhoneNum=$("#verify_phone_num"),GlobalPhoneList=$(".GlobalPhoneList");$(document).on("click",".GlobalPhoneList li",function(e){var o=$(e.target).closest("li");GlobalPhoneList.find("li").removeClass("is-active"),o.addClass("is-active"),phoneDialog.close();var t=o.find(".GlobalPhoneItem-number").text();$(".js-choose-district").text(t).attr("data-abbr",o.find(".GlobalPhoneItem-number").data("abbr")),completePhone(t)}),$("#verify_phone_num").on("change",function(e){completePhone(null,$(e.target).val())});;
+    });
+  })();
+</script>
