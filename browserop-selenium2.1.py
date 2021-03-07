@@ -22,8 +22,9 @@ script_tag = driver.find_element_by_xpath("//script[@id='tmpl_account']")
 print("script_tag, id = ", script_tag.get_attribute("id"))
 username_tag = driver.find_element_by_xpath("//div[@class='account-form-raw'][2]/div/input")
 '''
-operate_js = "document.getElementById('username')"
-driver.execute_script(operate_js)
+operate_js = "document.getElementById('tmpl_phone').innerHTML;"
+operate_js_content = driver.execute_script(operate_js)
+print('operate_js_content = ', operate_js_content)
 #username_tag = driver.find_element_by_xpath("//input[@id='username' and @name='username']")
 #username_tag = driver.find_elements_by_xpath("//script[@id='tmpl_account']")
 #username_tag = driver.find_elements_by_xpath("//div[@class='account-tabcon-start']")
