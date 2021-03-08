@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"> 
+<title>test4</title> 
+<script src="https://cdn.staticfile.org/jquery/2.0.0/jquery.min.js">
+</script>
+<script>
+//文档载入完成时调用
+$(document).ready(function(){
+  //事件，点击按钮调用
+  $("button#bt1").click(function(){
+    //捕获然后隐藏所有 p标签
+    $("p#p1").hide();
+  });
+  //事件，点击按钮调用
+  $("button#bt2").click(function(){
+    //捕获然后隐藏id='demo'的标签
+    $("#demo").hide();
+  });
+  //点击回调
+  $("button#bt3").click(function(){
+      $("#runoob").attr("href", function(i, origValue){
+          return origValue + "/jquery";
+      });
+  });
+});
+</script>
+</head>
+
+<body>
+<h2 id='hd1'>标题1 hd1</h2>
+<h2 id='hd2'>标题2 hd2</h2>
+<p id='sec1'>段落1 sec1</p>
+<p id='sec2'>段落2 sec2</p>
+<a href="//www.runoob.com" id="lk1">链接1 lk1</a></br></br>
+<a href="//www.runoob.com" id="lk2">链接2 lk1</a></br></br>
+<button id='bt1'>按钮1</button></br></br>
+<button id='bt2'>按钮2</button></br></br>
+
+</body>
+</html>

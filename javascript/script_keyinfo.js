@@ -1,0 +1,6 @@
+
+var kinfo = "";
+
+
+
+return kinfo;
