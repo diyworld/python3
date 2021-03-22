@@ -21,11 +21,12 @@ from selenium import webdriver
 
 HTML_TEST4      = r"C:\ccx\workplace\python3\html\test4.html"
 JS_BROWSER_INFO = r"C:\ccx\workplace\python3\javascript\show_browser_info.js"
-#PARAM_URL       = "https://www.douban.com/"
-PARAM_URL       = "https://www.baidu.com/"
+PARAM_URL       = "https://www.douban.com/"
+#PARAM_URL       = "https://www.baidu.com/"
 JS_LOAD_URL     = r"C:\ccx\workplace\python3\javascript\load_url.js"
 JS_GRUB_KINFO   = r"C:\ccx\workplace\python3\javascript\script_keyinfo.js"
 JS_LOGIN_DOUBAN = r"C:\ccx\workplace\python3\javascript\script_login.js"
+JS_OPRATE = r"C:\ccx\workplace\python3\javascript\script_oprate.js"
 
 # 获取js文件内容
 def get_js(js_path):
@@ -38,16 +39,16 @@ def get_js(js_path):
     return htmlstr
 
 
-# 创建Chrome驱动器
+# 1）创建Chrome驱动器
 driver = webdriver.Chrome()
-# 打开本地文件
+# 2）打开本地文件
 driver.get(HTML_TEST4)
 
-# 执行js获取浏览器信息
+# 3）执行js获取浏览器信息
 operate_js = get_js(JS_BROWSER_INFO)
 driver.execute_script(operate_js)
 
-# 加载该豆瓣主页面
+# 4）加载该豆瓣主页面
 # 注: 不能使用 execjs 模块调用 js 文件的方法，这样调用的环境就没了
 #import execjs
 #status = execjs.compile(open(JS_LOAD_URL, encoding='utf-8').read()).call('LoadUrlHandle', PARAM_URL)
@@ -57,11 +58,26 @@ operate_js = get_js(JS_LOAD_URL)
 status = driver.execute_script(operate_js, PARAM_URL)
 print("Open url<" + PARAM_URL + "> status: " + status)
 
-#抓取主页热点信息，打印到 python 控制台
+# 5）抓取主页热点信息，打印到 python 控制台
 operate_js = get_js(JS_GRUB_KINFO)
 kinfo = driver.execute_script(operate_js)
-print("Grub key info: " + kinfo)
+print("Grub key info:\n" + kinfo)
 
+# 6）登录
+operate_js = get_js(JS_LOGIN_DOUBAN)
+ifr_src = driver.execute_script(operate_js)
+print("Login the douban: " + ifr_src + '\n')
+
+# 等待登录完成
+cmd = input("cmd: ")
+while cmd != 'ok':
+    cmd = input("cmd: ")
+print("Login ok")
+
+# 登录后操作
+operate_js = get_js(JS_OPRATE)
+opdata = driver.execute_script(operate_js)
+print("opdata: " + opdata)
 """
 # 定位到电影，点击提交
 # 先定位到 id='anony-movie' and class='section'的 div数据块，然后逐级找到对应的链接标签
@@ -80,6 +96,10 @@ print(title)
 #    print(title)
 """
 # 退出
-time.sleep(15)
+time.sleep(3)
+cmd = input("cmd: ")
+while cmd != 'exit':
+    cmd = input("cmd: ")
+print("Exit")
 driver.quit()
 
