@@ -27,7 +27,12 @@ JS_LOAD_URL     = r"C:\ccx\workplace\python3\javascript\load_url.js"
 JS_GRUB_KINFO   = r"C:\ccx\workplace\python3\javascript\script_keyinfo.js"
 JS_LOGIN_DOUBAN = r"C:\ccx\workplace\python3\javascript\script_login.js"
 JS_OPRATE = r"C:\ccx\workplace\python3\javascript\script_oprate.js"
-
+JS_OPRATE2 = r"C:\ccx\workplace\python3\javascript\script_oprate2.js"
+JS_OPRATE3 = r"C:\ccx\workplace\python3\javascript\script_oprate3.js"
+def needack(ack):
+    t = input("ack: ")
+    while t != ack:
+        t = input("ack: ")
 # 获取js文件内容
 def get_js(js_path):
     f = open(js_path, 'r', encoding='UTF-8')
@@ -69,15 +74,23 @@ ifr_src = driver.execute_script(operate_js)
 print("Login the douban: " + ifr_src + '\n')
 
 # 等待登录完成
-cmd = input("cmd: ")
-while cmd != 'ok':
-    cmd = input("cmd: ")
+needack("ok")
 print("Login ok")
 
 # 登录后操作
 operate_js = get_js(JS_OPRATE)
+ret = driver.execute_script(operate_js)
+print("ret: " + ret)
+
+needack("ok")
+operate_js = get_js(JS_OPRATE2)
 opdata = driver.execute_script(operate_js)
-print("opdata: " + opdata)
+print("ret: " + ret)
+
+needack("ok")
+operate_js = get_js(JS_OPRATE3)
+opdata = driver.execute_script(operate_js)
+print("ret: " + ret)
 """
 # 定位到电影，点击提交
 # 先定位到 id='anony-movie' and class='section'的 div数据块，然后逐级找到对应的链接标签
@@ -97,9 +110,7 @@ print(title)
 """
 # 退出
 time.sleep(3)
-cmd = input("cmd: ")
-while cmd != 'exit':
-    cmd = input("cmd: ")
+needack("exit")
 print("Exit")
 driver.quit()
 
