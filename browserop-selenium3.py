@@ -1,9 +1,20 @@
 
 """
-    基于 selenium.webdriver 操控Chrome浏览器搜索信息，并提取第一个标题信息
-    注1：需要安装 selenium: pip install selenium
-    注2：需要下载 chromedriver.exe（版本要与实际浏览器一致），放置到 python3安装根目录下
-    注3：selenium的性质是一个web测试工具，用于模拟人操作浏览器用的
+    selenium 测试项
+    1）使用 selenium 打开 Chrome 浏览器
+    2）浏览器加载本地 html 文件
+    3）调用执行一段外部的 JavaScript 程序 show_browser_info.js
+    3.1）show_browser_info.js：搜集浏览器环境信息，cookie信息等显示在当前浏览器页面
+    4）调用执行 load_url.js，传入豆瓣主页
+    4.1）load_url.js：接收 url 参数，浏览器加载该 url 页面
+    5）调用执行 script_keyinfo.js
+    5.1）script_keyinfo.js：抓取主页热点信息，打印到 python 控制台
+    6）调用执行 script_login.js
+    6.1）script_login.js：设置用户名和密码，提交表单进行登录操作
+    6.2）打印登录结果：成功或失败
+    7）获取登录后的部分用户信息，打印到 python 控制台
+    8）指定打开一部电影，进行自动评论提交
+    9）手动验证是否提交成功
 """
 import time
 from selenium import webdriver
@@ -13,6 +24,7 @@ driver = webdriver.Chrome()
 # 打开网页
 driver.get("https://www.douban.com/")
 time.sleep(1)
+<<<<<<< HEAD
 # 定位到用户名标签，填写用户名
 #username_tag = driver.find_element_by_xpath("//div[@id='anony-movie' and @class='section']")
 iframe_tag = driver.find_element_by_xpath("//iframe[contains(@src,'//accounts.douban.com/passport/login_popup?login_source=anony')]")
