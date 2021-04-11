@@ -1,0 +1,22 @@
+# 配置文件
+
+#ADB目录
+adb_path: "C:\ccx\workplace\ADB\Minimal ADB and Fastboot\"
+# 日志文件存放路径
+record_path: "C:\ccx\workplace\python3\douyin_comments\record\"
+
+# 视频类目
+vedio_type:
+    -
+        # 关键词 - 终端数 - 评论遍历模式 - 用户上限数
+        key: "中国最美公路"
+        terminal_count: 1
+        trave_mode: "LR"
+        user_max: -1
+    -
+        key: "中国最美大山"
+        terminal_count: 1
+        trave_mode: "LR"
+        user_max: -1
+
+
