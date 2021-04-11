@@ -1,0 +1,9 @@
+[{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-456']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}][{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}]
+---- 2021-04-12 00:28:35 ----
+[{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}]
+---- 2021-04-12 00:29:30 ----
+[{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}]
+---- 2021-04-12 00:29:31 ----
+[{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}]
+---- 2021-04-12 00:29:34 ----
+[{'user_id': 'user-1', 'status': 'done', 'video_id_list': ['video-123']}, {'user_id': 'user-2', 'status': 'done', 'video_id_list': ['video-123']}]

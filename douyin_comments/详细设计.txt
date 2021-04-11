@@ -168,13 +168,13 @@
             user-count: -1
     存储日志：
         用户存储日志格式:
-            user-id: "99888"
+            user_id: "99888"
             op_status: "done"
-            vedio-id-list: ["12345678"]
+            vedio_id_list: ["12345678", "xxx"]
         视频存储日志格式:
-            verio-id: "12345678"
+            verio_id: "12345678"
             op_status: "done"
-            user-id-list: ["99888"]
+            user_id_list: ["99888", "xxx"]
         运行日志格式:
             time xxx xxx xxx ...
 【其他考虑】
