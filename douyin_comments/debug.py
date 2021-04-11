@@ -12,13 +12,15 @@ import threading
 文件同步操作
 防止不同实例操作同一个目录下的文件
 """
-g_thread_lock = threading.Lock()
+class source:
+    # 类定义全局变量
+    lock = threading.Lock()
 def loadto_file(path, s):
     """ 将字符串写入文件 """
     ret = True
     filename = "debug-" + time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
     fullpath = os.path.join(path, filename)
-    g_thread_lock.acquire()
+    source.lock.acquire()
     try:
         fd = open(fullpath, "a")
         fd.write(s)
@@ -26,7 +28,7 @@ def loadto_file(path, s):
     except:
         print("open and write failed")
         ret = False
-    g_thread_lock.release()
+    source.lock.release()
     return ret
 
 """

@@ -1,0 +1,7 @@
+[{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1']}, {'video_id': 'video-456', 'status': 'done', 'user_id_list': ['user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}][{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}]
+---- 2021-04-12 00:29:30 ----
+[{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}]
+---- 2021-04-12 00:29:31 ----
+[{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}]
+---- 2021-04-12 00:29:34 ----
+[{'video_id': 'video-123', 'status': 'done', 'user_id_list': ['user-1', 'user-2']}]
