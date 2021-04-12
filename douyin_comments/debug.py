@@ -12,29 +12,29 @@ import threading
 文件同步操作
 防止不同实例操作同一个目录下的文件
 """
-class source:
+class Source:
     # 类定义全局变量
     lock = threading.Lock()
-def loadto_file(path, s):
-    """ 将字符串写入文件 """
-    ret = True
-    filename = "debug-" + time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
-    fullpath = os.path.join(path, filename)
-    source.lock.acquire()
-    try:
-        fd = open(fullpath, "a")
-        fd.write(s)
-        fd.close()
-    except:
-        print("open and write failed")
-        ret = False
-    source.lock.release()
-    return ret
+    def loadto_file(self, path, s):
+        """ 将字符串写入文件 """
+        ret = True
+        filename = "debug-" + time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
+        fullpath = os.path.join(path, filename)
+        Source.lock.acquire()
+        try:
+            fd = open(fullpath, "a")
+            fd.write(s)
+            fd.close()
+        except:
+            print("open and write failed")
+            ret = False
+        Source.lock.release()
+        return ret
 
 """
 日志打印类
 """
-class debug:
+class Debug:
     def __init__(self):
         # 打印模式 ['full', 'class', 'func']
         self.mode = "class"
@@ -74,7 +74,7 @@ class debug:
         if self.wflag:
             # 存储到对应路径下
             if tag in self.storetags:
-                if not loadto_file(self.path, s):
+                if not Source().loadto_file(self.path, s):
                     return False
         return True
     def addtags(self, tags):
@@ -129,7 +129,7 @@ class debug:
 # 应用举例
 if (__name__ == "__main__"):
     # 普通打印测试
-    dbg = debug()
+    dbg = Debug()
     dbg.printlog("tmp", "hello", 1, (1, 2), {'one':1, 'tow':2})
     dbg.showtags()
     dbg.addtags(['debug-err', 'debug-tmp'])
@@ -139,8 +139,8 @@ if (__name__ == "__main__"):
     dbg.deltags(['debug-err', 'debug-trace'])
     dbg.showtags()
     # 日志存储测试
-    dbg = debug.debug()
+    dbg = Debug()
     dbg.printlog("info", "a good day")    # 为设置路径, 不会存储到文件
-    dbg.setpath(r"C:\ccx\workplace\python3\tmp")
+    dbg.setpath(r"C:\Ruijie\workplace\python3\tmp")
     dbg.printlog("info", "one two three") # 设置路径后, 会存储到文件
     dbg.printlog("trace", "1 2 3")        # trace标签, 默认不会存储到文件

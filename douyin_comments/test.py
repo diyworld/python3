@@ -11,8 +11,8 @@ import time
 
 import douyin_log
 
-dylog = douyin_log.dy_log()
-dylog.setpath(r"C:\ccx\workplace\python3\tmp")
+dylog = douyin_log.Dy_log()
+dylog.setpath(r"C:\Ruijie\workplace\python3\tmp")
 dylog.show()
 dylog.insert("video-123", 'done', 'user-1', 'done')
 dylog.show()
