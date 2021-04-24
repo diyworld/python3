@@ -1,4 +1,35 @@
 
+【视频搜索】
+@搜索按钮
+content-desc="搜索" resource-id="com.ss.android.ugc.aweme:id/dzo"
+@文字输入
+resource-id="com.ss.android.ugc.aweme:id/aop"
+注1：先点击后输入
+注2：用空格的关键词时，在命令界面输入是这样：adb shell input text "hello\ world"
+@搜索确认按钮
+text="搜索" resource-id="com.ss.android.ugc.aweme:id/kla"
+@视频选项
+text="视频" resource-id="android:id/text1"
+@第一个视频
+resource-id="com.ss.android.ugc.aweme:id/f7s"
+
+【异常界面】
+@软件更新
+text="检测到更新" resource-id="com.ss.android.ugc.aweme:id/jh5"
+text="以后再说" resource-id="com.ss.android.ugc.aweme:id/elm"
+text="立即升级" resource-id="com.ss.android.ugc.aweme:id/kzh"
+@暂停&&播放
+横坐标根据分辨率取 10% ~ 90%的随机值
+纵坐标根据分辨率和具体页面取不同值
+
+【评论】
+content-desc="xxx的头像", resource-id="com.ss.android.ugc.aweme:id/jv"
+
+【用户】
+text="抖音号：cz1357924680" resource-id="com.ss.android.ugc.aweme:id/l1m"
+
+--------------------------------------------------------------------------------
+【adb安装与测试】
 S1 解压文件
 S2 设置全局变量
     Path: %Android%
@@ -13,8 +44,8 @@ S7 测试fastboot是否安装正确
 package:com.ss.android.ugc.aweme  installer=com.bignox.app.store.hd
 
 --------------------------------------------------------------------------------
+【adb命令记录】
 
-adb shell
 
 dumpsys activity activities | grep Activities
 am start -n com.ss.android.ugc.aweme/.splash.SplashActivity
@@ -26,11 +57,10 @@ adb pull /sdcard/ui.xml
 adb push C:\ccx\workplace\ADB\douyin.apk /sdcard/
 
 uiautomator dump /sdcard/tmp/ui.xml
-input tap 300 1060
-input text "hello you"
+adb shell input tap 300 1060
+adb shell input text "hello\ you"
+
 --------------------------------------------------------------------------------
-
-
 # 查看连接的设备
 adb devices
 
@@ -43,8 +73,6 @@ adb shell
     am start -n 应用包名/应用activity类名
     # 停止应用
     am force-stop 应用包名
-    # 拷贝设备文件到本地
-    adb pull /sdcard/ui.xml
     # 获取屏幕控件信息
     uiautomator dump /sdcard/ui.xml
     # 点击操作
@@ -54,7 +82,9 @@ adb shell
     input text "hello you"
     # 提交, 根据规律找到提交点, 点击即可
     input tap 805 1336
-
+# 拷贝设备文件到本地
+adb pull /sdcard/ui.xml
+    
 --------------------------------------------------------------
 【前层遍历基本流程】
 S1 人工准备
@@ -88,21 +118,6 @@ Tag2
 内容坐标 text="发送消息…" resource-id="com.ss.android.ugc.aweme:id/fxu"
 发送坐标 resource-id="com.ss.android.ugc.aweme:id/i93"
 
-
-【遍历用户算法(遍历深度 1)】
-    S1) 点击评论前获取评论数, 或点击后找出 "xxx条评论"的坐标和评论数
-    S2) 获取第一级第1个评论者头像坐标, 记录名称, 插入列表
-    S3) 进行发送私信操作
-    S4) 发送完成, 回退到评论列表
-    S5) 控件固定操作, 使控件空闲下来才能抓到控件信息
-    S6) 重新在当前控件信息理定位到当前位置坐标, 搜索当前控件信息的下一个评论对象
-    S7) 如果搜索到则转S3, 并把名称插入列表
-        如果未搜索到且搜索到"暂时没有更多了", 则转S20
-        如果未搜索到且没有"暂时没有更多了"的信息, 则转S8
-    S8) 进行上滑操作, 重新获取控件信息, 
-    S9) 在新控件信息中定位最近一次的用户名称, 顺延找到到下一个评论对象, 然后转S3
-    S20)该视频搜索完毕, 继续下一个视频
-    
 【基本功能】
     模拟动作集合：点击，滑动
     控件信息获取操作
