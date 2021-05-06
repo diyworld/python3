@@ -5,9 +5,9 @@ import json
 import debug
 
 # 公共模块
-class common:
+class Common:
     def __init__(self):
-        self.dbg = debug.debug()
+        self.dbg = debug.Debug()
         self.dbg.printlog("info", platform.system() + ',', "version:" + platform.python_version())
     """ 读取文件内容 """
     def readfile(self, path, mode):
@@ -47,7 +47,10 @@ class common:
     """ 写数据到文件 """
     def writefile(self, path, data):
         pass
-    
-    
+    def isin_list(self, lst, value):
+        for v in lst:
+            if v == value:
+                return True
+        return False
     
     

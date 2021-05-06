@@ -77,9 +77,12 @@ class xml_attrs_finder:
         self.parser.setContentHandler(self.xmlsax) # 重写 ContexHandler
     # 设置输入属性和输出属性
     def set_attrs(self, tag, attrs, keys):
+        #self.dbg.printlog("tmp", "tag,attrs,keys =", tag, attrs, keys)
         self.xmlsax.tag = tag
         self.xmlsax.attrs = attrs.copy()
         self.xmlsax.keys = keys.copy()
+        self.xmlsax.result = []
+        #self.dbg.printlog("tmp", "tag,attrs,keys =", self.xmlsax.tag, self.xmlsax.attrs, self.xmlsax.keys)
     # 获取输出属性
     def get_finds(self):
         return self.xmlsax.result
@@ -88,6 +91,7 @@ class xml_attrs_finder:
         # tag  : 标签名称, 为空表示不关心
         # attrs: 输入的标签属性, 字典
         # keys: 要查找的属性, 列表
+        #self.dbg.printlog("tmp", "tag,attrs,keys =", tag, attrs, keys)
         if typeof(attrs) != 'dict' or typeof(keys) != 'list':
             print("param err")
             return []

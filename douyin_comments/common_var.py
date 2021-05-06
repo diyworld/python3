@@ -32,7 +32,7 @@ termianl_info = [
         'ratio': "900*1600"
     },{
         'name': "iphone5",
-        'ratio': "1960*2480"
+        'ratio': "900*1600"
     }
 ]
 
@@ -71,7 +71,7 @@ PAGE_FCS_VDO_CMMT = 31  #视频评论页面
 PAGE_FCS_VDO_CMMT_BACK = 3101
 PAGE_FCS_VDO_CMMT_COUNT = 3102 #168条评论
 PAGE_FCS_VDO_CMMT_WINDOW = 3103 #评论主窗口
-PAGE_FCS_VDO_CMMT_VDO_WINDOW = 3103 #带评论时的视频窗口
+PAGE_FCS_VDO_CMMT_VDO_WINDOW = 3104 #带评论时的视频窗口
 PAGE_FCS_VDO_CMMT_INPUT = 3105
 #用户页面
 PAGE_FCS_VDO_USER = 32
@@ -135,7 +135,7 @@ page_info = {
     ##更多
     PAGE_FCS_VDO_USER_MORE:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/jfv"},"keys":["bounds"]},
     ##返回
-    PAGE_FCS_VDO_USER_BACK:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/l6"},"keys":["bounds"]},
+    PAGE_FCS_VDO_USER_BACK:{"tag":"node","attrs":{"content-desc":"返回"},"keys":["bounds"]},
     ##用户ID 抖音号
     PAGE_FCS_VDO_USER_ID:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/l1m"},"keys":["text"]},
     ##私信按钮
@@ -143,7 +143,7 @@ page_info = {
     ##内容输入
     PAGE_FCS_VDO_USER_LTTR_INPUT:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/fxu"},"keys":["bounds"]},
     ##发送
-    PAGE_FCS_VDO_USER_LTTR_SEND:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/i93"},"keys":["bounds"]},
+    PAGE_FCS_VDO_USER_LTTR_SEND:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/dpe"},"keys":["bounds"]},
     # 异常页面
     #软件更新
     PAGEERR_UPDATE_FLAG:{"tag":"node","attrs":{"text":"检测到更新","resource-id":"com.ss.android.ugc.aweme:id/jh5"}},
