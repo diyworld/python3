@@ -91,6 +91,10 @@ class xml_attrs_finder:
         # tag  : 标签名称, 为空表示不关心
         # attrs: 输入的标签属性, 字典
         # keys: 要查找的属性, 列表
+        # return: [{k1:v1,k2:v2,...},{k3:v3},...]
+        #         列表里的每个元素{}都是满足条件的行的目标键值对
+        #         比如要找 k1, k2, k3的键值对，则会遍历每行，对满足条件的行，
+        #         取出k1,k2,k3对应的键和值，组成一个字典，添加到列表里
         #self.dbg.printlog("tmp", "tag,attrs,keys =", tag, attrs, keys)
         if typeof(attrs) != 'dict' or typeof(keys) != 'list':
             print("param err")

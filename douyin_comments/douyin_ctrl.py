@@ -24,7 +24,7 @@ class AdbDyCtrl:
         self.dy_activity = ".splash.SplashActivity"                  #抖音active名称(软件启动时使用)
     def sleeprandom(self, second):
         sec = int(second * 100)
-        sec = random.randint(int(sec/10), sec)
+        sec = random.randint(int(sec/20), sec)
         sec = sec / 100.0
         time.sleep(sec)
     def axisrandom(self, axis):
@@ -36,7 +36,7 @@ class AdbDyCtrl:
             ret.append(x)
             ret.append(y)
         except:
-            self.dbg.printlog("err", ret)
+            self.dbg.printlog("err", axis)
         return ret
     def adb_run(self, adb_cmd):
         """ 运行adb命令, 有输出则返回输出, 没有则返回空字符串 """
@@ -71,7 +71,7 @@ class AdbDyCtrl:
     def adb_click(self, x, y):
         """ 点击 """
         cmd = "adb shell input tap " + str(x) + " " + str(y)
-        #self.dbg.printlog("trace", cmd)
+        #self.dbg.printlog("tmp", cmd)
         self.adb_run(cmd)
     def click_random(self, axis):
         """ 给定坐标防范, 随机延时, 随机点击 """
@@ -79,6 +79,26 @@ class AdbDyCtrl:
         axisrnd = self.axisrandom(axis)
         self.adb_click(axisrnd[0], axisrnd[1])
         self.sleeprandom(0.3)
+    def adb_slide(self, x1, y1, x2, y2):
+        """ 滑动 """
+        cmd = "adb shell input swipe "\
+            + str(x1) + " " + str(y1) + " "\
+            + str(x2) + " " + str(y2)
+        #self.dbg.printlog("tmp", cmd)
+        self.adb_run(cmd)
+    def slide_random(self, axis, length, dir):
+        """ 给定坐标防范和滑动长度, 随机延时和滑动
+            axis: 起点坐标范围
+            length: 滑动长度
+            dir: 方向, up/down/left/right
+        """
+        self.sleeprandom(0.5)
+        axisrnd = self.axisrandom(axis)
+        axisrnd2 = axisrnd.copy()
+        if dir == 'up':
+            axisrnd2[1] = (0) if (axisrnd2[1] < length) else (axisrnd2[1] - length)
+            self.adb_slide(axisrnd[0], axisrnd[1], axisrnd2[0], axisrnd2[1])
+            self.sleeprandom(0.3)
     def adb_dy_start(self):
         """ 启动抖音软件 """
         cmd = "am start -n %s/%s" % (self.dy_packet, self.dy_activity)
@@ -93,12 +113,9 @@ class AdbDyCtrl:
         """ 输入文件信息 """
         cmd = "adb shell input text %s" % (msg)
         self.dbg.printlog("trace", cmd)
-        self.sleeprandom(0.4)
+        self.sleeprandom(0.3)
         self.adb_run(cmd)
-        self.sleeprandom(0.5)
-        pass
-    def adb_slide(self, x1, y1, x2, y2):
-        """ 滑动 """
+        self.sleeprandom(0.3)
         pass
 
 class AdbDyThreadMain:
@@ -128,31 +145,38 @@ class AdbDyThreadMain:
             "vdo_main_axis" : [],    #主视频区坐标, 开始和暂停
             "vdo_stop_axis" : [],    #主视频区坐标, 开始和暂停
             "vdo_comment_axis" : [], #评论按钮
+            "vdo_cmmt_content_axis" : [], #评论区坐标
             "vdo_cmmt_user_axis" : [], #评论窗口用户头像坐标列表
             "vdo_cmmt_vdo_axis" : [], #评论页的视频页
-            "vdo_user_axis" : [], #用户页抖音号
+            "vdo_user_id" : [], #用户页抖音号
             "vdo_user_more_axis" : [], #用户页更多
-            "vdo_user_cmmt_back_axis" : [], #用户页返回
-            "vdo_user_info_back_axis" : [], #用户页返回
+            "vdo_user_cmmt_back_axis" : [], #用户评论页返回
+            "vdo_user_info_back_axis" : [], #用户信息页返回
             "vdo_user_sendkey_axis" : [], #用户页发送私信按钮
             "vdo_user_sendcont_axis" : [], #用户页发送私信消息框
             "vdo_user_send_axis" : [], #用户页发送私信发送按钮
         }
-    def axisrandom(self, axis):
-        """ 计算随机坐标 """
-        ret = []
-        try:
-            x = random.randint(axis[0], axis[2]-1)
-            y = random.randint(axis[1], axis[3]-1)
-            ret.append(x)
-            ret.append(y)
-        except:
-            self.dbg.printlog("err", axis)
-        return ret
-    def axissync_get(self, page_key):
+    def attrs_get(self, page_idx, is_need_ui_dump):
+        #获取ui控件里的指定属性信息
+        #page_idx: 搜索的代号，每个代号在全局变量里都对应一个搜索参数
+        #is_need_ui_dump: 是否需要重新获取ui控件信息
+        #return: 返回列表，每个列表元素是一个字典，每个字典代表一行的健值对信息输出
+        #根据page_idx，从全局变量里匹配到对应的 tag/attrs/keys
+        #然后搜索.xml文件，搜索结果填充到返回值
+        result = []
+        if is_need_ui_dump:
+            dump = self.adb.adb_ui_dump()
+        if dump:
+            info = self.gbl.page_info[page_idx]
+            tag = info['tag']
+            attrs = info['attrs']
+            keys = info['keys']
+            result = self.xaf.find_attrs(self.adb.uixml_tmp, tag, attrs, keys)
+        return result
+    def axissync_get(self, page_idx):
         axis = []
         if self.adb.adb_ui_dump():
-            info = self.gbl.page_info[page_key]
+            info = self.gbl.page_info[page_idx]
             tag = info['tag']
             attrs = info['attrs']
             axis = self.xaf.get_axis(self.adb.uixml_tmp, tag, attrs)
@@ -177,13 +201,27 @@ class AdbDyThreadMain:
             self.vdoaxis[key] = axis
         elif key == "vdo_comment_axis":
             self.vdoaxis[key] = self.axissync_get(self.gbl.PAGE_FCS_VDO_CONTENT)
+        elif key == "vdo_cmmt_content_axis":
+            axis = []
+            axis.append(self.gaxis[self.gbl.PAGE_FCS_VDO_CMMT_WINDOW])
+            self.vdoaxis[key] = axis
         elif key == "vdo_cmmt_user_axis":
-            self.vdoaxis[key] = self.axissync_get(self.gbl.PAGE_FCS_VDO_USER_LIST)
+            #这里不仅仅要获取坐标值，还需要获取信息用于判断当前页面是否正常
+            self.vdoaxis[key] = self.attrs_get(self.gbl.PAGE_FCS_VDO_USER_INFO)
+            #把 bounds 元素放到列表的第一个元素位置
+            for i, v in enumerate(self.vdoaxis[key]):
+                if 'bounds' in v:
+                    if i == 0:
+                        break
+                    else:
+                        t = self.vdoaxis[key].pop(i)
+                        self.vdoaxis[key].insert(0, t)
+                        break
         elif key == "vdo_cmmt_vdo_axis":
             axis = []
             axis.append(self.gaxis[self.gbl.PAGE_FCS_VDO_CMMT_VDO_WINDOW])
             self.vdoaxis[key] = axis
-        elif key == "vdo_user_axis":
+        elif key == "vdo_user_id":
             self.vdoaxis[key] = self.axissync_get(self.gbl.PAGE_FCS_VDO_USER_ID)
         elif key == "vdo_user_more_axis":
             self.vdoaxis[key] = self.axissync_get(self.gbl.PAGE_FCS_VDO_USER_MORE)
@@ -201,136 +239,255 @@ class AdbDyThreadMain:
         if not self.vdoaxis[key]:
             self.dbg.printlog("err", "Get axis false:", key)
         return self.vdoaxis[key]
-    def ss_idle_proc(self):
-        return self.gbl.SS_READY
-    def ss_ready_proc(self):
-        #搜索视频信息 PAGE_FCS
-        #定位到第一个视频主页面 PAGE_FCS_VDO
-        return self.gbl.SS_RUN
+    def axis_ana(self, axis_str):
+        """ 解析坐标 [x1,y1][x2,y2] -> [x1,y1,x2,y2] """
+        taxis = []
+        tt = re.match("\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]", axis_str)
+        if tt:
+            taxis.append(int(tt.group(1)))
+            taxis.append(int(tt.group(2)))
+            taxis.append(int(tt.group(3)))
+            taxis.append(int(tt.group(4)))
+        return taxis
+    def slideup(self): #上滑操作
+        """ 评论页上滑操作 """
+        self.adb.sleeprandom(1)
+        axis = self.axissync("vdo_cmmt_content_axis")
+        y1 = axis[1]
+        y2 = axis[3]
+        axis[1] = y2 - (y2 - y1) / 6
+        length = (y2 - y1) * 4 / 6
+        self.slide_random(axis, length, 'up')
+    def check_page(self):
+        #检查当前页面是否正常
+        if not self.adb.adb_ui_dump():
+            return False
+        page = ""
+        lst = []
+        res = self.attrs_get(self.gbl.PAGE_FCS_VDO, True)
+        lst.append(res)
+        res = self.attrs_get(self.gbl.PAGE_FCS_VDO_CMMT, False)
+        lst.append(res)
+        res = self.attrs_get(self.gbl.PAGE_FCS_VDO_USER_ID, False)
+        lst.append(res)
+        res = self.attrs_get(self.gbl.PAGE_FCS_VDO_USER_LTTR, False)
+        lst.append(res)
+        self.dbg.printlog("trace", "lst =", lst)
+        flg = [False, False, False, False]
+        for v in (lst):
+            for vv in v:
+                if 'text' in vv:
+                    if vv['text'].find("留下你的精彩评论吧") >= 0:
+                        flg[0] = True #视频主页或评论页
+                    if vv['text'].find("条评论") >= 0:
+                        flg[1] = True #视频评论页
+                    if vv['text'].find("抖音号") >= 0:
+                        flg[2] = True #用户信息主页
+                    if vv['text'].find("发私信") >= 0:
+                        flg[3] = True #用户信息-更多
+                    break
+        if flg[0]:
+            if flg[1]:
+                #视频评论页
+                page = self.gbl.PAGE_FCS_VDO
+            else
+                #视频主页
+                page = self.gbl.PAGE_FCS_VDO_CMMT
+        elif flg[2]:
+            if flg[3]:
+                #用户信息主页
+                page = self.gbl.PAGE_FCS_VDO_USER_ID
+            else
+                #用户信息-更多
+                page = self.gbl.PAGE_FCS_VDO_USER_LTTR
+        else:
+            self.dbg.printlog("err", "Not found any page")
+        if page:
+            return page
+        return False
     def ss_run_proc(self):
-        """ 私信轮询 """
-        step = 1
-        user_id_list = []
-        user_axis_list = []
-        user_axis_list_idx = 0
+        nextact = lambda a: nact if nact else a
+        nact = ''
+        st = 'S1'
+        alst = [] #每个状态的当前行为指示器列表
+        alst['S1'] = "get_comment_axis"
+        user_id = ''
+        user_id_list = [] #用户id列表
+        cmmtui_info_list = [] #评论页ui信息列表
+        err_count = 0 #临时错误计数器
+        aaxis = [] #临时坐标
+        last_cmmt_page = False #标识最后一页评论信息
         while True:
-            #S1 打开评论页
-            if step == 1:
-                #获取ui控件信息
-                self.dbg.printlog("trace", "S1-1: get comment axis")
-                axis_list = self.axissync("vdo_comment_axis")
-                if not axis_list:
-                    self.dbg.printlog("trace", "try get comment_axis again in S1")
-                    axis = self.axissync("vdo_stop_axis")
-                    self.dbg.printlog("tmp", "stop axis:", axis)
-                    self.adb.click_random(axis[0])
-                    step = 1
-                    continue
-                #点击评论
-                self.dbg.printlog("trace", "S1-1: click comment axis")
-                self.adb.click_random(axis_list[0])
-                #判断用户信息
-                if user_axis_list:
-                    self.dbg.printlog("trace", "step = 3")
-                    step = 3 #已经存在用户坐标信息，则跳过步骤2
-                else:
-                    self.dbg.printlog("trace", "step = 2")
-                    step = 2
-            #S2 获取UI控件信息的所有用户头像坐标
-            if step == 2:
-                self.dbg.printlog("trace", "S2: find all users")
-                if self.adb.adb_ui_dump():
-                    user_axis_list = self.axissync("vdo_cmmt_user_axis")
-                    self.dbg.printlog("tmp", user_axis_list)
-                if not user_axis_list:
-                    #没有获取到用户评论页的ui控件情况，回到主视频页，点击暂停
-                    axis = self.axissync("vdo_cmmt_vdo_axis")
-                    self.adb.click_random(axis[0])
-                    axis = self.axissync("vdo_stop_axis")
-                    self.adb.click_random(axis[0])
-                    self.dbg.printlog("trace", "step = 1")
-                    step = 1
-                    continue
-                else:
-                    self.dbg.printlog("trace", "step = 3")
-                    step = 3
-            #S3 遍历 user_axis_list
-            if step == 3:
-                self.dbg.printlog("trace", "S3: send message to all users")
-                while user_axis_list_idx < len(user_axis_list):
-                    axis = user_axis_list[user_axis_list_idx]
+            self.dbg.pringlog("trace", ">>", st, alst[st])
+            if st == 'S1': #主视频页
+                if alst[st] == 'get_comment_axis':
+                    #获取并点击坐标评论按钮
+                    axis_list = self.axissync('vdo_comment_axis')
+                    if not axis_list:
+                        alst[st] = 'pause'
+                        nact = 'get_comment_axit'
+                        continue
+                    self.adb.click_random(axis_list[0])
+                    alst['S2'] = 'get_user_info_list'
+                    st = 'S2'
+                elif alst[st] == 'pause':
+                    #暂停
+                    axis_list = self.axissync("vdo_cmmt_vdo_axis")
+                    self.adb.click_random(axis_list[0])
+                    alst[st] = nextact('get_comment_axis')
+                    nact = ''
+                elif alst[st] == 'check':
+                    page = self.check_page()
+                    if not page:
+                        err_count += 1
+                        if err_count > 5:
+                            err_count = 0
+                            alst[st] = 'err_exit'
+                            continue
+                        alst[st] = 'pause'
+                        nact = 'check'
+                        continue
+                    if page == self.gbl.PAGE_FCS_VDO:
+                        #视频评论页
+                        alst['S2'] = 'back'
+                        st = 'S2'
+                    elif page == self.gbl.PAGE_FCS_VDO_CMMT:
+                        #视频主页
+                        alst['S1'] = 'pause'
+                    elif page == PAGE_FCS_VDO_USER_ID:
+                        #用户信息主页
+                        alst['S3'] = 'back'
+                        st = 'S3'
+                    elif page == PAGE_FCS_VDO_USER_LTTR:
+                        #用户信息-更多
+                        alst['S4'] = 'back'
+                        st = 'S4'
+                elif alst[st] == 'next_vedio':
+                    #下一个视频，检查后才能上滑
+                    page = self.check_page()
+                    if page != self.gbl.PAGE_FCS_VDO:
+                        alst[st] = 'pause'
+                        nact = 'next_vedio'
+                        continue
+                    alst[st] = 'slide_up'
+                elif alst[st] == 'slide_up':
+                    #上滑操作
+                    self.slideup()
+                elif alst[st] == 'err_exit':
+                    #异常退出
+                    self.dbg.pringlog("err", "err_exit")
+                    exit(0)
+            elif st == 'S2': #视频评论页
+                if alst[st] == "get_user_info_list":
+                    #获取用户信息列表
+                    if user_info_list:
+                        #如果已经存在，则直接使用
+                        alst[st] = "get_user_head"
+                        continue
+                    ui_info_list_idx = 0
+                    ui_info_list = self.attrs_get(self.gbl.PAGE_FCS_VDO_USER_LIST, True)
+                    t_info = self.attrs_get(self.gbl.PAGE_FCS_VDO_CONTENT_NOMORE, False)
+                    self.dbg.printlog("trace", "ui_info_list =", ui_info_list)
+                    self.dbg.printlog("trace", "t_info =", t_info)
+                    if not ui_info_list:
+                        #没有获取到，回退到视频页点击暂停后再来
+                        alst['S1'] = 'pause'
+                        alst[st] = 'back'
+                        continue
+                    if t_info and 'text' in t_info:
+                        #最后一页评论信息
+                        last_cmmt_page = True
+                    alse[st] = 'get_user_head'
+                elif alst[st] == 'get_user_head':
+                    #逐个获取用户头像信息
+                    ele = {}
+                    if ui_info_list_idx >= len(ui_info_list):
+                        #这次遍历结束
+                        user_info_list = []
+                        if last_cmmt_page:
+                            #整个评论用户都以遍历结束
+                            alst['S1'] = 'next_vedio'
+                            alst[st] = back
+                            continue
+                        else:
+                            #本页评论页的用户遍历结束
+                            alst[st] = 'slide_up'
+                            continue
+                    ele = ui_info_list[ui_info_list_idx]
+                    ui_info_list_idx += 1
+                    if not ele or 'bounds' not in ele:
+                        #如果不是头像坐标，则直接下一个
+                        continue
+                    if False:
+                        #如果是第一个广告类型的头像，则直接下一个
+                        #正常应该不会获取到这个信息
+                        continue
+                    #坐标转换为 [x1,y1,x2,y2]的形似，记录在 aaxis
+                    aaxis = axis_ana(ele['bounds'])
+                    alst[st] = 'click_user_head'
+                elif alst[st] == 'click_user_head':
                     #点击用户头像
-                    self.dbg.printlog("trace", "S3-1: click user head [", axis, "]")
-                    self.adb.click_random(axis)
-                    #获取抖音号
-                    self.dbg.printlog("trace", "S3-2: get user id")
-                    self.adb.adb_ui_dump()
-                    info = self.gbl.page_info[self.gbl.PAGE_FCS_VDO_USER_ID]
-                    tag = info['tag']
-                    attrs = info['attrs']
-                    keys = info['keys']
-                    #self.dbg.printlog("tmp", "tag,attrs,keys =", tag, attrs, keys)
-                    result = self.xaf.find_attrs(self.adb.uixml_tmp, tag, attrs, keys)
-                    self.dbg.printlog("trace", "userid info:", result)
-                    #判断抖音号是否已经操作过
-                    userid = result[0][keys[0]]
-                    if self.com.isin_list(user_id_list, userid):
-                        self.dbg.printlog("trace", "user<" + userid + "> has been sent")
-                    else:
-                        user_id_list.append(userid)
-                        #点击更多
-                        self.dbg.printlog("trace", "S3-3: click user more")
-                        axis = self.axissync("vdo_user_more_axis")
-                        self.adb.click_random(axis[0])
-                        #点击发送私信
-                        self.dbg.printlog("trace", "S3-4: click send key")
-                        axis = self.axissync("vdo_user_sendkey_axis")
-                        self.adb.click_random(axis[0])
-                        #点击发送消息框
-                        self.dbg.printlog("trace", "S3-5: insert message in box")
-                        axis = self.axissync("vdo_user_sendcont_axis")
-                        self.adb.click_random(axis[0])
-                        #输入消息内容
-                        self.adb.adb_input("hello")
-                        #点击发送
-                        self.dbg.printlog("trace", "S3-6: send message")
-                        #shutil.copy(self.adb.uixml_tmp, r"C:\ccx\workplace\python3\douyin_comments\tmp\ui9.xml")
-                        axis = self.axissync("vdo_user_send_axis")
-                        self.adb.click_random(axis[0])
-                        #点击返回
-                        self.dbg.printlog("trace", "S3-7: back from user")
-                        axis = self.axissync("vdo_user_info_back_axis")
-                        self.adb.click_random(axis[0])
-                    #再次点击返回
-                    self.dbg.printlog("trace", "S3-8: back from comment")
-                    axis = self.axissync("vdo_user_cmmt_back_axis")
-                    self.adb.click_random(axis[0])
-                    #点击评论页的视频部分，进入完整视频页
-                    self.dbg.printlog("trace", "S3-9: back to raw redio window")
-                    axis = self.axissync("vdo_cmmt_vdo_axis")
-                    self.dbg.printlog("trace", "cmmt out axis:", axis)
-                    self.adb.click_random(axis[0])
-                    #点击暂停
-                    self.dbg.printlog("trace", "S3-10: pause vedio")
-                    axis = self.axissync("vdo_stop_axis")
-                    self.dbg.printlog("trace", "vdo stop axis:", axis)
-                    self.adb.click_random(axis[0])
-                    #点击评论按钮
-                    self.dbg.printlog("trace", "S3-11: comment again")
-                    axis = self.axissync("vdo_comment_axis")
-                    self.adb.click_random(axis[0])
-                    #用户数累计，同时记录相关信息
-                    user_axis_list_idx = user_axis_list_idx + 1
-                #一轮评论完毕
-                step = 4
-                user_axis_list_idx = 0
-                user_axis_list = []
-            #上滑，更新用户列表
-            if step == 4:
-                self.dbg.printlog("info", "user_id_list =", user_id_list)
-                break
-        self.adb.sleeprandom(3)
-        return self.gbl.SS_RUN
+                    self.adb.click_random(aaxis)
+                    alst['S3'] = 'get_user_ui_info'
+                    st = 'S3'
+                elif alst[st] == 'slide_up':
+                    #评论信息上滑，获取新的评论
+                    self.slideup()
+                    alst[st] = 'get_user_info_list'
+                elif alst[st] == 'back':
+                    #回退
+                    axis_list = self.axissync('vdo_user_cmmt_back_axis')
+                    self.adb.click_random(axis_list[0])
+                    alst['S1'] = 'pause'
+                    st = 'S1'
+            elif st == 'S3': #用户信息页
+                if alst[st] == 'get_user_ui_info':
+                    #获取用户ui控件信息
+                    dyid = self.axissync('vdo_user_id')
+                    if not dyid:
+                        alst[st] = 'back'
+                        alst['S2'] = 'back'
+                        alst['S1'] = 'check'
+                        continue
+                    alst[st] = 'look_user_id'
+                elif alst[st] == 'look_user_id':
+                    #检查用户id信息
+                    if user_id in user_id_list:
+                        alst[st] = 'back'
+                        alst['S2'] = 'get_user_head'
+                        continue
+                    alst[st] = 'click_user_more'
+                elif alst[st] == 'click_user_more':
+                    #点击更多
+                    axis_list = self.axissync('vdo_user_more_axis')
+                    self.adb.click_random(axis_list[0])
+                    alst['S4'] = 'click_send_key'
+                    st = 'S4'
+                elif alst[st] == 'back':
+                    #回退
+                    axis_list = self.axissync('vdo_user_info_back_axis')
+                    self.adb.click_random(axis_list[0])
+                    st = 'S2'
+            elif st == 'S4': #用户更多
+                if alst[st] == 'click_send_key':
+                    #点击发送私信按钮
+                    pass
+                elif alst[st] == 'back':
+                    #回退
+                    pass
+            elif st == 'S5': #用户信息发送页
+                elif alst[st] == 'click_send_box':
+                    #点击发送私信信息框
+                    pass
+                elif alst[st] == 'input_msg':
+                    #输入信息
+                    pass
+                elif alst[st] == 'send_msg':
+                    #发送信息
+                    pass
+                elif alst[st] == 'back':
+                    #回退
+                    pass
     def ss_pause_proc(self):
         pass
     def ss_stop_proc(self):
@@ -365,6 +522,7 @@ if (__name__ == "__main__"):
     print(ret)
     """
     run = AdbDyThreadMain()
+    #run.slideup()
     run.ss_run_proc()
     
 

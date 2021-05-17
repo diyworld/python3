@@ -1,4 +1,21 @@
 
+uiautomator dump /sdcard/ui.xml
+adb pull /sdcard/ui.xml
+
+【页面标识关键参数】
+视频主页
+node text="留下你的精彩评论吧" and not text="104 条评论"
+resource-id="com.ss.android.ugc.aweme:id/b7w"
+resource-id="com.ss.android.ugc.aweme:id/title"
+视频评论页
+node text="留下你的精彩评论吧" and text="104 条评论"
+用户信息页
+node text="抖音号:3t625" and not text="发私信"
+resource-id="com.ss.android.ugc.aweme:id/l1m"
+resource-id="com.ss.android.ugc.aweme:id/i9p"
+用户信息 - 更多
+node text="抖音号:3t625" and text="发私信"
+
 【视频搜索】
 @搜索按钮
 content-desc="搜索" resource-id="com.ss.android.ugc.aweme:id/dzo"

@@ -58,7 +58,8 @@ class Debug:
             s = s + sys._getframe().f_code.co_filename
         elif self.mode == 'class':
             # 模式 class, 打印模块名
-            s = s + getattr(sys.modules['__main__'], '__file__', None)
+            #s = s + getattr(sys.modules['__main__'], '__file__', None)
+            s = s + os.path.basename(sys._getframe().f_code.co_filename)
         elif self.mode == 'func':
             # 模式 func, 打印函数名
             s = s + inspect.stack()[1][3]
@@ -95,7 +96,7 @@ class Debug:
         print("storetags =", self.tags)
         return True
     def setpath(self, path):
-        """ 设置日志存储路径 """
+        """ 设置日志存储路径, 设置好后自动存储 """
         if len(path) == 0:
             print("path is null")
             return False
@@ -109,18 +110,18 @@ class Debug:
         self.wflag = True
         return True
     def clrpath(self):
-        """ 清除日志存储路径 """
+        """ 清除日志存储路径, 删除后停止存储 """
         self.wflag = False
         self.path = ""
         return True
     def addstoretags(self, storetags):
-        """ 新增标签, storetags: 标签列表 """
+        """ 新增用于日志存储的标签, storetags: 标签列表 """
         for tag in storetags:
             if tag not in self.storetags:
                 self.storetags.append(tag)
         return True
     def delstoretags(self, storetags):
-        """ 删除标签, storetags: 标签列表 """
+        """ 删除日志存储的标签, storetags: 标签列表 """
         for tag in storetags:
             if tag in self.storetags:
                 self.storetags.remove(tag)
