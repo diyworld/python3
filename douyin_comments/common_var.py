@@ -79,6 +79,7 @@ PAGE_FCS_VDO_USER_LIST = 3201
 PAGE_FCS_VDO_USER_MORE = 3202
 PAGE_FCS_VDO_USER_BACK = 3203
 PAGE_FCS_VDO_USER_ID = 3204
+PAGE_FCS_VDO_USER_INFO = 3205
 #用户私信页面
 PAGE_FCS_VDO_USER_LTTR = 322
 PAGE_FCS_VDO_USER_LTTR_INPUT = 32201
@@ -115,6 +116,8 @@ SS_ERROR = 7   #错误状态
 page_info = {
     # 视频焦点页
     #视频搜索
+    PAGE_FCS_VDO:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/b7w"},"keys":["text"]},
+    PAGE_FCS_VDO_CMMT:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/title"},"keys":["text"]},
     ##搜索
     PAGE_FCS_SEARCH:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/dzo"},"keys":["bounds"]},
     ##输入
@@ -128,9 +131,11 @@ page_info = {
     ##视频评论
     PAGE_FCS_VDO_CONTENT:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/b98"},"keys":["bounds"]},
     ##用户遍历, 通过 xxx的头像 找到对应坐标列表
+    ##这里还要获取一些额外的信息用于判断 ui 控件信息的位置 todo
     PAGE_FCS_VDO_USER_LIST:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/jv"},"keys":["bounds"]},
+    PAGE_FCS_VDO_USER_INFO:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/jv"},"keys":["bounds"]},
     ##用户遍历标志: 暂时没有更多了
-    PAGE_FCS_VDO_CONTENT_NOMORE:{"tag":"node","attrs":{"text":"暂时没有更多了","class":"android.widget.TextView"},"keys":["bounds"]},
+    PAGE_FCS_VDO_CONTENT_NOMORE:{"tag":"node","attrs":{"text":"暂时没有更多了","class":"android.widget.TextView"},"keys":["text"]},
     #用户页面
     ##更多
     PAGE_FCS_VDO_USER_MORE:{"tag":"node","attrs":{"resource-id":"com.ss.android.ugc.aweme:id/jfv"},"keys":["bounds"]},
