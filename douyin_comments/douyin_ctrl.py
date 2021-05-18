@@ -84,7 +84,7 @@ class AdbDyCtrl:
         cmd = "adb shell input swipe "\
             + str(x1) + " " + str(y1) + " "\
             + str(x2) + " " + str(y2) + " "\
-            + "70"
+            + "140"
         self.dbg.printlog("tmp", cmd)
         self.adb_run(cmd)
     def slide_random(self, axis, length, dir):
@@ -96,7 +96,7 @@ class AdbDyCtrl:
         self.sleeprandom(0.5)
         axisrnd = self.axisrandom(axis)
         if dir == 'up':
-            self.adb_slide(axisrnd[0], axisrnd[1], axisrnd[0], axisrnd[1] + length)
+            self.adb_slide(axisrnd[0], axisrnd[1], axisrnd[0], axisrnd[1] - length)
             self.sleeprandom(0.3)
     def adb_dy_start(self):
         """ 启动抖音软件 """
@@ -251,14 +251,20 @@ class AdbDyThreadMain:
         time.sleep(1)
         self.adb.sleeprandom(1)
         axis_list = self.axissync("vdo_cmmt_content_axis")
-        axis = axis_list[0]
+        axis = []
+        axis.append(axis_list[0][0])
+        axis.append(axis_list[0][1])
+        axis.append(axis_list[0][2])
+        axis.append(axis_list[0][3])
+        self.dbg.printlog("tmp", "axis =", axis)
         y1 = axis[1]
         y2 = axis[3]
-        if y2 < y1:
+        if y2 <= y1:
             self.dbg.printlog("err", "y2 < y1")
-        axis[1] = int(y2 - (y2 - y1) * 1 / 6)
-        axis[3] = int(y2 - (y2 - y1) * 2 / 6)
+        axis[1] = int(y2 - (y2 - y1) * 2 / 6)
+        axis[3] = int(y2 - (y2 - y1) * 1 / 6)
         length = int((y2 - y1) * 3 / 6)
+        self.dbg.printlog("tmp", "axis/len =", axis, length)
         self.adb.slide_random(axis, length, 'up')
     def check_page(self):
         #检查当前页面是否正常
@@ -324,19 +330,21 @@ class AdbDyThreadMain:
             if st == 'S1': #主视频页
                 if alst[st] == 'get_comment_axis':
                     #获取并点击坐标评论按钮
-                    self.vdoaxis["vdo_comment_axis"] = ''
+                    #self.vdoaxis["vdo_comment_axis"] = ''
                     axis_list = self.axissync('vdo_comment_axis')
                     if not axis_list:
                         alst[st] = 'pause'
                         continue
                     #self.dbg.printlog("tmp", "wait to click cmmt")
                     #time.sleep(3)
-                    axis = axis_list[0]
-                    axis[0] += 5
-                    axis[1] += 5
-                    axis[2] -= 5
-                    axis[3] -= 5
+                    axis = []
+                    axis.append(axis_list[0][0] + 10)
+                    axis.append(axis_list[0][1] + 10)
+                    axis.append(axis_list[0][2] - 10)
+                    axis.append(axis_list[0][3] - 10)
+                    self.dbg.printlog("tmp", "cmmt axis:", axis)
                     self.adb.click_random(axis)
+                    #time.sleep(2)
                     alst['S2'] = 'vdo_cmmt_user_axis'
                     st = 'S2'
                 elif alst[st] == 'pause':
@@ -349,6 +357,7 @@ class AdbDyThreadMain:
                         alst[st] = 'get_comment_axis'
                     next_act = ''
                 elif alst[st] == 'check':
+                    time.sleep(1)
                     page = self.check_page()
                     if not page:
                         err_count += 1
@@ -358,7 +367,6 @@ class AdbDyThreadMain:
                             continue
                         alst[st] = 'pause'
                         next_act = 'check'
-                        time.sleep(2)
                         continue
                     err_count = 0
                     if page == self.gbl.PAGE_FCS_VDO:
@@ -382,6 +390,9 @@ class AdbDyThreadMain:
                         alst['S3'] = 'back'
                         alst['S4'] = 'back'
                         st = 'S4'
+                    else:
+                        self.dbg.printlog("warnning", "not match")
+                        time.sleep(1)
                 elif alst[st] == 'next_vedio':
                     #下一个视频，检查后才能上滑
                     page = self.check_page()
@@ -424,7 +435,7 @@ class AdbDyThreadMain:
                     if cmmt_user_info_list_idx >= len(cmmt_user_info_list):
                         #这次遍历结束
                         cmmt_user_info_list = []
-                        self.vdoaxis["vdo_comment_axis"] = ''
+                        #self.vdoaxis["vdo_comment_axis"] = ''
                         if last_cmmt_page:
                             #整个评论用户都以遍历结束
                             last_cmmt_page = False
@@ -474,9 +485,10 @@ class AdbDyThreadMain:
                     if not user_id:
                         #没有找到抖音号，判断为非正常用户
                         #回退并检查一遍
-                        alst[st] = 'back'
-                        alst['S2'] = 'back'
-                        alst['S1'] = 'pause'
+                        #alst[st] = 'back'
+                        #alst['S2'] = 'back'
+                        alst['S1'] = 'check'
+                        st = 'S1'
                         continue
                     alst[st] = 'check_user_id'
                 elif alst[st] == 'check_user_id':
