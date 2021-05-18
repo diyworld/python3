@@ -2,6 +2,14 @@
 uiautomator dump /sdcard/ui.xml
 adb pull /sdcard/ui.xml
 
+【问题】
+视频主页点击评论按钮无效
+然后就直接点击已经获取了的头像坐标，然后发现获取不到user_id，
+然后从S3开始 back到S2，S2再back到S1，在S1里pause，这个过程就完全乱了
+行动项：
+1）为什么点击评论按钮无效？搞清楚
+2）获取不到user_id，这时应该直接回到S1里check，而不是逐层返回
+
 【页面标识关键参数】
 视频主页
 node text="留下你的精彩评论吧" and not text="104 条评论"

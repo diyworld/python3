@@ -83,8 +83,9 @@ class AdbDyCtrl:
         """ 滑动 """
         cmd = "adb shell input swipe "\
             + str(x1) + " " + str(y1) + " "\
-            + str(x2) + " " + str(y2)
-        #self.dbg.printlog("tmp", cmd)
+            + str(x2) + " " + str(y2) + " "\
+            + "70"
+        self.dbg.printlog("tmp", cmd)
         self.adb_run(cmd)
     def slide_random(self, axis, length, dir):
         """ 给定坐标防范和滑动长度, 随机延时和滑动
@@ -94,10 +95,8 @@ class AdbDyCtrl:
         """
         self.sleeprandom(0.5)
         axisrnd = self.axisrandom(axis)
-        axisrnd2 = axisrnd.copy()
         if dir == 'up':
-            axisrnd2[1] = (0) if (axisrnd2[1] < length) else (axisrnd2[1] - length)
-            self.adb_slide(axisrnd[0], axisrnd[1], axisrnd2[0], axisrnd2[1])
+            self.adb_slide(axisrnd[0], axisrnd[1], axisrnd[0], axisrnd[1] + length)
             self.sleeprandom(0.3)
     def adb_dy_start(self):
         """ 启动抖音软件 """
@@ -249,13 +248,17 @@ class AdbDyThreadMain:
         return taxis
     def slideup(self): #上滑操作
         """ 评论页上滑操作 """
+        time.sleep(1)
         self.adb.sleeprandom(1)
         axis_list = self.axissync("vdo_cmmt_content_axis")
         axis = axis_list[0]
         y1 = axis[1]
         y2 = axis[3]
-        axis[1] = int(math.floor(y2 - (y2 - y1) / 6))
-        length = int(math.floor((y2 - y1) * 4 / 6))
+        if y2 < y1:
+            self.dbg.printlog("err", "y2 < y1")
+        axis[1] = int(y2 - (y2 - y1) * 1 / 6)
+        axis[3] = int(y2 - (y2 - y1) * 2 / 6)
+        length = int((y2 - y1) * 3 / 6)
         self.adb.slide_random(axis, length, 'up')
     def check_page(self):
         #检查当前页面是否正常
@@ -321,11 +324,19 @@ class AdbDyThreadMain:
             if st == 'S1': #主视频页
                 if alst[st] == 'get_comment_axis':
                     #获取并点击坐标评论按钮
+                    self.vdoaxis["vdo_comment_axis"] = ''
                     axis_list = self.axissync('vdo_comment_axis')
                     if not axis_list:
                         alst[st] = 'pause'
                         continue
-                    self.adb.click_random(axis_list[0])
+                    #self.dbg.printlog("tmp", "wait to click cmmt")
+                    #time.sleep(3)
+                    axis = axis_list[0]
+                    axis[0] += 5
+                    axis[1] += 5
+                    axis[2] -= 5
+                    axis[3] -= 5
+                    self.adb.click_random(axis)
                     alst['S2'] = 'vdo_cmmt_user_axis'
                     st = 'S2'
                 elif alst[st] == 'pause':
@@ -347,7 +358,9 @@ class AdbDyThreadMain:
                             continue
                         alst[st] = 'pause'
                         next_act = 'check'
+                        time.sleep(2)
                         continue
+                    err_count = 0
                     if page == self.gbl.PAGE_FCS_VDO:
                         #视频评论页
                         alst[st] = 'get_comment_axis'
@@ -356,7 +369,6 @@ class AdbDyThreadMain:
                     elif page == self.gbl.PAGE_FCS_VDO_CMMT:
                         #视频主页
                         alst[st] = 'get_comment_axis'
-                        alst['S1'] = 'pause'
                     elif page == self.gbl.PAGE_FCS_VDO_USER_ID:
                         #用户信息主页
                         alst[st] = 'get_comment_axis'
@@ -412,6 +424,7 @@ class AdbDyThreadMain:
                     if cmmt_user_info_list_idx >= len(cmmt_user_info_list):
                         #这次遍历结束
                         cmmt_user_info_list = []
+                        self.vdoaxis["vdo_comment_axis"] = ''
                         if last_cmmt_page:
                             #整个评论用户都以遍历结束
                             last_cmmt_page = False
@@ -463,7 +476,7 @@ class AdbDyThreadMain:
                         #回退并检查一遍
                         alst[st] = 'back'
                         alst['S2'] = 'back'
-                        alst['S1'] = 'check'
+                        alst['S1'] = 'pause'
                         continue
                     alst[st] = 'check_user_id'
                 elif alst[st] == 'check_user_id':
