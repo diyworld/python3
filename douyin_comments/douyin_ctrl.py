@@ -7,6 +7,7 @@ import time
 import common_var
 import re
 import common
+import douyin_log
 
 import xml_sax
 
@@ -127,6 +128,7 @@ class AdbDyThreadMain:
         self.adb = AdbDyCtrl("test")
         self.xaf = xml_sax.xml_attrs_finder()
         self.gaxis = self.gbl.get_axis("nova4")
+        self.log = douyin_log.class_store_log(r"C:\ccx\workplace\python3\douyin_comments\tmp\test.log")
         self.dbg.printlog("trace", self.gaxis)
         #环境信息
         evironment = {
@@ -314,6 +316,7 @@ class AdbDyThreadMain:
             return page
         return False
     def ss_run_proc(self):
+        """ 从视频页开始遍历所有视频，并发送私信信息 """
         next_act = ''
         st = 'S1'
         alst = {} #每个状态的当前行为指示器字典
@@ -342,7 +345,7 @@ class AdbDyThreadMain:
                     axis.append(axis_list[0][1] + 10)
                     axis.append(axis_list[0][2] - 10)
                     axis.append(axis_list[0][3] - 10)
-                    self.dbg.printlog("tmp", "cmmt axis:", axis)
+                    #self.dbg.printlog("tmp", "cmmt axis:", axis)
                     self.adb.click_random(axis)
                     #time.sleep(2)
                     alst['S2'] = 'vdo_cmmt_user_axis'
@@ -435,6 +438,7 @@ class AdbDyThreadMain:
                     if cmmt_user_info_list_idx >= len(cmmt_user_info_list):
                         #这次遍历结束
                         cmmt_user_info_list = []
+                        self.log.commit()
                         #self.vdoaxis["vdo_comment_axis"] = ''
                         if last_cmmt_page:
                             #整个评论用户都以遍历结束
@@ -479,9 +483,10 @@ class AdbDyThreadMain:
                     user_id = ''
                     for v in lst:
                         if 'text' in v:
-                            user_id = v['text']
+                            #注意这里分隔符使用中文的冒号
+                            user_id = v['text'].split('：')[1]
                             break
-                    self.dbg.printlog("tmp", user_id, user_id_list)
+                    #self.dbg.printlog("tmp", user_id, user_id_list)
                     if not user_id:
                         #没有找到抖音号，判断为非正常用户
                         #回退并检查一遍
@@ -493,12 +498,13 @@ class AdbDyThreadMain:
                     alst[st] = 'check_user_id'
                 elif alst[st] == 'check_user_id':
                     #检查用户id信息
-                    if user_id in user_id_list:
+                    if self.log.is_user_exist(user_id):
                         alst[st] = 'back'
                         alst['S2'] = 'back'
                         alst['S1'] = 'pause'
                         continue
                     user_id_list.append(user_id)
+                    self.log.user_insert(user_id)
                     alst[st] = 'click_user_more'
                 elif alst[st] == 'click_user_more':
                     #点击更多

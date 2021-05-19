@@ -1,4 +1,4 @@
-import os
+import os, re
 import threading
 
 import time
@@ -212,4 +212,76 @@ class Dy_log:
         self.source.show()
         return True
     
+class class_store_log:
+    """
+    视频号和用户号，获取一次存储一次
+    文件名取为搜索关键字
+    开始时读取并载入该文件
+    一个线程维护一个log对象，一个log对象维护一个文件
+    """
+    def __init__(self, fullpath):
+        self.dbg = debug.Debug()
+        self.comm = common.Common()
+        self.recordfile = fullpath
+        self.user_id_list = []
+        self.user_id_list_commit_idx = 0
+        self.setpath(fullpath)
+    def setpath(self, fullpath):
+        """ 设置存储文件 """
+        if len(fullpath) == 0:
+            self.dbg.printlog("trace", "fullpath is null")
+            return False
+        elif not os.path.exists(fullpath):
+            #文件不存在，则创建
+            self.dbg.printlog("trace", "create fullpath")
+            curtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            try:
+                fd = open(fullpath, "a")
+                fd.write(str(curtime + " ----\n"))
+                self.recordfile = fullpath
+                fd.close()
+            except:
+                self.dbg.printlog("err", "open and write failed")
+                return False
+        else:
+            #如果文件存在，则载入文件内容
+            lst = self.comm.readfile(self.recordfile, 'line')
+            for i in range(len(lst)):
+                if lst[i].find('----') == -1:
+                    self.user_id_list.append(lst[i])
+            self.user_id_list_commit_idx = len(self.user_id_list)
+            #self.dbg.printlog("trace", "user_id_list =", self.user_id_list)
+        return True
+    def user_insert(self, user_id):
+        #插入 user_id 到列表
+        if user_id:
+            self.user_id_list.append(user_id)
+    def is_user_exist(self, user_id):
+        #判断用户是否已经存在
+        #self.dbg.printlog("tmp", "user_id =", user_id)
+        #self.dbg.printlog("tmp", "user_id_list =", self.user_id_list)
+        if user_id in self.user_id_list:
+            return True
+        return False
+    def commit(self):
+        #同步 user_id_list 列表到文件
+        try:
+            list_len = len(self.user_id_list)
+            if list_len > 0:
+                fd = open(self.recordfile, "a")
+                curtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                fd.write(str("---- " + curtime + " ----\n"))
+                for i in range(self.user_id_list_commit_idx, list_len):
+                    #self.dbg.printlog("trace", "add user id: ", self.user_id_list[i])
+                    fd.write(self.user_id_list[i] + '\n')
+                fd.close()
+            self.user_id_list_commit_idx = list_len
+            self.dbg.printlog("trace", "commit success")
+        except:
+            self.dbg.printlog("err", "commit failed")
+            return False
+        return True
+
+
+
 

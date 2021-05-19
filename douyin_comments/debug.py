@@ -59,7 +59,7 @@ class Debug:
         elif self.mode == 'class':
             # 模式 class, 打印模块名
             #s = s + getattr(sys.modules['__main__'], '__file__', None)
-            s = s + os.path.basename(sys._getframe().f_code.co_filename)
+            s = s + os.path.basename(sys._getframe(1).f_code.co_filename)
         elif self.mode == 'func':
             # 模式 func, 打印函数名
             s = s + inspect.stack()[1][3]

@@ -27,7 +27,8 @@ class Common:
             try:
                 fo = open(path, 'r')
                 for line in fo.readlines():
-                    line = line.strip()
+                    line = line.rstrip('\n')
+                    line = line.rstrip('\r')
                     lines.append(line)
                 fo.close()
                 return lines
