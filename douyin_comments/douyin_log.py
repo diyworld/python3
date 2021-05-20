@@ -237,7 +237,7 @@ class class_store_log:
             curtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             try:
                 fd = open(fullpath, "a")
-                fd.write(str(curtime + " ----\n"))
+                fd.write(str("---- " + curtime + " ----\n"))
                 self.recordfile = fullpath
                 fd.close()
             except:

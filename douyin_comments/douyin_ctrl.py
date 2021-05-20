@@ -8,8 +8,10 @@ import common_var
 import re
 import common
 import douyin_log
-
 import xml_sax
+
+import _thread
+import time
 
 class AdbDyCtrl:
     """ adb操作接口 """
@@ -17,7 +19,9 @@ class AdbDyCtrl:
         self.dbg = debug.Debug()
         self.com = common.Common()
         self.gbl = common_var
-        self.uixml = "ui_" + str(ident) + ".xml"                     #ui控件文件名称
+        self.ident = ident
+        new_name = re.sub(r'[^0-9A-Za-z]', '_', ident)
+        self.uixml = "ui_" + str(new_name) + ".xml"                     #ui控件文件名称
         self.adbpath = self.gbl.path_adb                             #adb软件路径
         self.uixml_tmp = os.path.join(self.gbl.path_tmp, self.uixml) #ui控件全路径
         self.uixml_tmp2 = "/sdcard/" + self.uixml                    #终端里的 ui控件全路径
@@ -53,7 +57,7 @@ class AdbDyCtrl:
         return ret
     def adb_ui_dump(self):
         """ 获取UI控件信息 """
-        cmd = "adb shell uiautomator dump " + self.uixml_tmp2
+        cmd = "adb -s " + self.ident + " shell uiautomator dump " + self.uixml_tmp2
         self.dbg.printlog("trace", cmd)
         ret = self.adb_run(cmd)
         if not ret:
@@ -62,7 +66,7 @@ class AdbDyCtrl:
         #拷贝文件到win
         if os.path.exists(self.uixml_tmp):
             os.remove(self.uixml_tmp)
-        cmd = "adb pull " + self.uixml_tmp2 + " " + self.uixml_tmp
+        cmd = "adb -s " + self.ident + " pull " + self.uixml_tmp2 + " " + self.uixml_tmp
         ret = self.adb_run(cmd)
         if not re.match(r"\[(100%)\]", ret):
             self.dbg.printlog("warnning", ret)
@@ -71,7 +75,7 @@ class AdbDyCtrl:
         return True
     def adb_click(self, x, y):
         """ 点击 """
-        cmd = "adb shell input tap " + str(x) + " " + str(y)
+        cmd = "adb -s " + self.ident + " shell input tap " + str(x) + " " + str(y)
         #self.dbg.printlog("tmp", cmd)
         self.adb_run(cmd)
     def click_random(self, axis):
@@ -82,7 +86,7 @@ class AdbDyCtrl:
         self.sleeprandom(0.3)
     def adb_slide(self, x1, y1, x2, y2):
         """ 滑动 """
-        cmd = "adb shell input swipe "\
+        cmd = "adb -s " + self.ident + " shell input swipe "\
             + str(x1) + " " + str(y1) + " "\
             + str(x2) + " " + str(y2) + " "\
             + "140"
@@ -101,17 +105,18 @@ class AdbDyCtrl:
             self.sleeprandom(0.3)
     def adb_dy_start(self):
         """ 启动抖音软件 """
-        cmd = "am start -n %s/%s" % (self.dy_packet, self.dy_activity)
+        cmd = "am -s " + self.ident + " start -n %s/%s" % (self.dy_packet, self.dy_activity)
         self.dbg.printlog("trace", cmd)
         self.adb_run(cmd)
     def adb_dy_stop(self):
         """ 关闭抖音软件 """
-        cmd = "am force-stop %s" % (self.dy_packet)
+        cmd = "am -s " + self.ident + " force-stop %s" % (self.dy_packet)
         self.dbg.printlog("trace", cmd)
         self.adb_run(cmd)
     def adb_input(self, msg):
         """ 输入文件信息 """
-        cmd = "adb shell input text %s" % (msg)
+        #cmd = "adb shell input text %s" % (msg)
+        cmd = "adb -s " + self.ident + " shell am broadcast -a ADB_INPUT_TEXT --es msg "  + msg
         self.dbg.printlog("trace", cmd)
         self.sleeprandom(0.3)
         self.adb_run(cmd)
@@ -120,16 +125,19 @@ class AdbDyCtrl:
 
 class AdbDyThreadMain:
     """ 子线程主控制 """
-    def __init__(self):
+    def __init__(self, terminal_name):
+        self.terminal_name = terminal_name
         self.gbl = common_var
         self.com = common.Common()
         self.status = self.gbl.SS_IDLE
         self.dbg = debug.Debug()
-        self.adb = AdbDyCtrl("test")
+        self.adb = AdbDyCtrl(terminal_name)
         self.xaf = xml_sax.xml_attrs_finder()
-        self.gaxis = self.gbl.get_axis("nova4")
-        self.log = douyin_log.class_store_log(r"C:\ccx\workplace\python3\douyin_comments\tmp\test.log")
+        self.gaxis = self.gbl.get_axis(terminal_name)
         self.dbg.printlog("trace", self.gaxis)
+        log_fullpath = os.path.join(self.gbl.log_path, self.format_name(terminal_name) + '.log')
+        self.dbg.printlog("trace", log_fullpath)
+        self.log = douyin_log.class_store_log(log_fullpath)
         #环境信息
         evironment = {
             "status": self.gbl.SS_IDLE, #当前状态
@@ -156,6 +164,10 @@ class AdbDyThreadMain:
             "vdo_user_sendcont_axis" : [], #用户页发送私信消息框
             "vdo_user_send_axis" : [], #用户页发送私信发送按钮
         }
+    def format_name(self, name):
+        new_name = re.sub(r'[^0-9A-Za-z]', '_', name)
+        print("new_name = " + new_name)
+        return new_name
     def attrs_get(self, page_idx, is_need_ui_dump):
         #获取ui控件里的指定属性信息
         #page_idx: 搜索的代号，每个代号在全局变量里都对应一个搜索参数
@@ -322,7 +334,7 @@ class AdbDyThreadMain:
         alst = {} #每个状态的当前行为指示器字典
         alst['S1'] = "get_comment_axis"
         user_id = ''
-        user_id_list = ['抖音号：278785512', '抖音号：No.1_YANGYANG', '抖音号：5969841', '抖音号：Mumu2004'] #用户id列表
+        user_id_list = [] #用户id列表
         cmmt_user_info_list_idx = 0
         cmmt_user_info_list = [] #评论页ui信息列表
         err_count = 0 #临时错误计数器
@@ -537,7 +549,8 @@ class AdbDyThreadMain:
                     alst[st] = 'input_msg'
                 elif alst[st] == 'input_msg':
                     #输入信息
-                    self.adb.adb_input("hello")
+                    #self.adb.adb_input("hello")
+                    self.adb.adb_input("你好")
                     alst[st] = 'send_msg'
                 elif alst[st] == 'send_msg':
                     #发送信息
@@ -578,16 +591,33 @@ class AdbDyThreadMain:
         while True:
             self.status_machine(msg)
             
+def thread1(name, delay):
+    time.sleep(delay)
+    print("thread-1 start")
+    run = AdbDyThreadMain(name)
+    run.ss_run_proc()
+
+def thread2(name, delay):
+    time.sleep(delay)
+    print("thread-2 start")
+    run = AdbDyThreadMain(name)
+    run.ss_run_proc()
+
 if (__name__ == "__main__"):
     """
     ident = "xx"
     adb = AdbDyCtrl(ident)
-    ret = adb.sleeprandom(3)
+    ret = adb.adb_input("你好")
     print(ret)
     """
-    run = AdbDyThreadMain()
-    #run.slideup()
-    run.ss_run_proc()
-    
+    dbg = debug.Debug()
+
+    dbg.printlog("trace", common_var.termianl_info[0])
+    _thread.start_new_thread(thread1, (common_var.termianl_info[0]['name'], 1))
+
+    dbg.printlog("trace", common_var.termianl_info[1])
+    _thread.start_new_thread(thread2, (common_var.termianl_info[1]['name'], 2))
+
+
 
 

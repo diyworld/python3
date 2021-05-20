@@ -28,10 +28,10 @@ vedio_type = [
 #终端信息
 termianl_info = [
     {
-        'name': "nova4",
+        'name': "127.0.0.1:62001",
         'ratio': "900*1600"
     },{
-        'name': "iphone5",
+        'name': "127.0.0.1:62025",
         'ratio': "900*1600"
     }
 ]
