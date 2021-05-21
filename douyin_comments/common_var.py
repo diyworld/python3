@@ -11,6 +11,8 @@ path_adb = r"C:\ccx\workplace\ADB\Minimal_ADB_and_Fastboot"
 path_tmp = r"C:\ccx\workplace\python3\douyin_comments\tmp"
 #日志文件存放路径
 log_path = r"C:\ccx\workplace\python3\douyin_comments\record"
+#发送消息
+send_message = "你好"
 #视频类目
 vedio_type = [
     {

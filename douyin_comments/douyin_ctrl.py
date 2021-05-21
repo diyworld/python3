@@ -1,3 +1,8 @@
+"""
+    抖音自动发送私信信息功能
+    问题：过程中如果对方回一个信息，或抖音弹出广告，或升级信息，就可能导致识别异常
+"""
+
 import os, shutil
 import json
 import threading
@@ -504,6 +509,10 @@ class AdbDyThreadMain:
                         #回退并检查一遍
                         #alst[st] = 'back'
                         #alst['S2'] = 'back'
+                        #根据经验，大多数情况是点击评论页失败，后续的误点击导致视频播放，
+                        #从而到这里无法获取到正确的ui信息，因此在这里直接点击一次，把视频播放暂停下来
+                        axis_list = self.axissync("vdo_cmmt_vdo_axis")
+                        self.adb.click_random(axis_list[0])
                         alst['S1'] = 'check'
                         st = 'S1'
                         continue
@@ -550,7 +559,7 @@ class AdbDyThreadMain:
                 elif alst[st] == 'input_msg':
                     #输入信息
                     #self.adb.adb_input("hello")
-                    self.adb.adb_input("你好")
+                    self.adb.adb_input(self.gbl.send_message)
                     alst[st] = 'send_msg'
                 elif alst[st] == 'send_msg':
                     #发送信息
@@ -615,8 +624,8 @@ if (__name__ == "__main__"):
     dbg.printlog("trace", common_var.termianl_info[0])
     _thread.start_new_thread(thread1, (common_var.termianl_info[0]['name'], 1))
 
-    dbg.printlog("trace", common_var.termianl_info[1])
-    _thread.start_new_thread(thread2, (common_var.termianl_info[1]['name'], 2))
+    #dbg.printlog("trace", common_var.termianl_info[1])
+    #_thread.start_new_thread(thread2, (common_var.termianl_info[1]['name'], 2))
 
 
 
